@@ -2,24 +2,38 @@ let result = new Result();
 
 let numbers = document.querySelectorAll('button.num');
 let operators = document.querySelectorAll('button.operator');
-let resultDisplay = document.querySelector('.mainResult');
+let mainResultDisplay = document.querySelector('.mainResult');
+let workingResultDisplay = document.querySelector('.workingResult')
 let clearButton = document.querySelector('button.clear');
 let deleteButton = document.querySelector('button.delete')
 
+window.addEventListener('keydown', function(e){
+    key = e.key;
+    c
+    
+});
+
 numbers.forEach(function(number){
-    number.onclick = function(){
-        result.addInput(number.value);
-        updateDisplay();
-    };
+    number.onclick = function(){ handleNumber(number)};
 });
 
 operators.forEach(function(operator){
-    operator.onclick = function(){
-        result.changeOperator(operator.value);
-        console.log(result.operator);
-        updateDisplay();
-    };
+    operator.onclick = function(){ handleOperator(operator)};
 });
+
+function handleNumber(number){
+    result.addInput(number.value);
+    updateDisplay();
+}
+
+function handleOperator(operator){
+    if (operator.value === '=' && result.workingValue){
+        workingResultDisplay.textContent = `${result.value} ${result.operator} ${result.workingValue} =`;
+    }
+    result.changeOperator(operator.value);
+
+    updateDisplay();
+};
 
 deleteButton.onclick = function(){
     result.delete();
@@ -33,10 +47,17 @@ clearButton.onclick = function(){
 
 function updateDisplay(){
     if (result.workingValue){
-        resultDisplay.textContent = result.workingValue;
+        mainResultDisplay.textContent = result.workingValue;
     } else{
-        resultDisplay.textContent = result.value;
+        mainResultDisplay.textContent = result.value;
     }
+    updateWorkingResultDisplay();
+}
+
+function updateWorkingResultDisplay(){
+    if (!(result.operator === '=')){
+        workingResultDisplay.textContent = `${result.value} ${result.operator}`;
+    } 
 }
 
 function add(num1, num2){
@@ -85,8 +106,9 @@ function Result(){
         if (this.workingValue){
             this.value = roundTwoDec(operate(this.operator,this.value, this.workingValue)).toString();
             this.workingValue='';
-            console.log("new value is", this.value);
+            console.log('reset working value');
         }
+        
         this.operator = newOperator;
 
     };
