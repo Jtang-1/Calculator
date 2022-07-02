@@ -2,7 +2,9 @@ let result = new Result();
 
 let numbers = document.querySelectorAll('button.num');
 let operators = document.querySelectorAll('button.operator');
-let resultDisplay = document.querySelector('.result');
+let resultDisplay = document.querySelector('.mainResult');
+let clearButton = document.querySelector('button.clear');
+let deleteButton = document.querySelector('button.delete')
 
 numbers.forEach(function(number){
     number.onclick = function(){
@@ -17,13 +19,26 @@ operators.forEach(function(operator){
         console.log(result.operator);
         updateDisplay();
     };
-
 });
 
-function updateDisplay(){
-    resultDisplay.textContent = result.value;
+deleteButton.onclick = function(){
+    result.delete();
+    updateDisplay();
+};
 
+clearButton.onclick = function(){
+    result.clear();
+    updateDisplay();
+};
+
+function updateDisplay(){
+    if (result.workingValue){
+        resultDisplay.textContent = result.workingValue;
+    } else{
+        resultDisplay.textContent = result.value;
+    }
 }
+
 function add(num1, num2){
     return Number(num1) + Number(num2);
 }
@@ -57,7 +72,9 @@ function operate (operator, num1, num2){
     }
 }
 
-let operator = document.querySelector('button.operator');
+function roundTwoDec(num){
+    return Math.round((num+Number.EPSILON) * 100) / 100;
+}
 
 function Result(){
     this.value = '';
@@ -66,7 +83,7 @@ function Result(){
 
     this.changeOperator = function (newOperator){
         if (this.workingValue){
-            this.value = operate(this.operator,this.value, this.workingValue).toString();
+            this.value = roundTwoDec(operate(this.operator,this.value, this.workingValue)).toString();
             this.workingValue='';
             console.log("new value is", this.value);
         }
@@ -76,14 +93,29 @@ function Result(){
 
     this.addInput = function(numStr){
         console.log(!(this.operator === '='));
-        if (this.value.includes('.') && numStr === '.') return;
-        if (this.operator === '=') this.value += numStr;
+        if (this.operator === '='){
+            if (this.value.includes('.') && numStr === '.') return;
+            this.value += numStr;
+        }
         if (!(this.operator === '=')){
+            if (this.workingValue.includes('.') && numStr === '.') return;
             this.workingValue +=numStr;
         }
     };
 
+    this.delete = function(){
+        if (this.value){
+            console.log("this is", this.value);
+            this.value = this.value.slice(0,-1);
+            console.log("new", this.value);
+        }
+    };
 
-    
+    this.clear = function(){
+        this.value = '';
+        this.operator = '=';
+        this.workingValue = '';
+    }
+
 
 }
