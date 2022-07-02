@@ -9,41 +9,43 @@ let deleteButton = document.querySelector('button.delete')
 
 window.addEventListener('keydown', function(e){
     key = e.key;
-    c
-    
+    if ((e.key >= 0 && e.key <= 9) || e.key==='.') handleNumber(e.key); 
+    if (e.key === '=' || e.key === 'Enter') handleOperator('=');
+    if (e.key === 'Backspace') deleteNumber()
+    if (e.key === 'Escape') clearNumber()
+    if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') handleOperator(e.key)
 });
 
-numbers.forEach(function(number){
-    number.onclick = function(){ handleNumber(number)};
-});
-
-operators.forEach(function(operator){
-    operator.onclick = function(){ handleOperator(operator)};
-});
+numbers.forEach(function(number){ number.onclick = function(){ handleNumber(number)};});
+operators.forEach(function(operator){ operator.onclick = function(){ handleOperator(operator)};});
+deleteButton.onclick = function(){deleteNumber()}
+clearButton.onclick = function(){clearNumber()};
 
 function handleNumber(number){
-    result.addInput(number.value);
+    if (!(typeof number === 'string')) number = number.value;
+    result.addInput(number);
     updateDisplay();
 }
 
 function handleOperator(operator){
-    if (operator.value === '=' && result.workingValue){
+    if (!(typeof operator === 'string')) operator = operator.value;
+    if (operator === '=' && result.workingValue){
         workingResultDisplay.textContent = `${result.value} ${result.operator} ${result.workingValue} =`;
     }
-    result.changeOperator(operator.value);
-
+    result.changeOperator(operator);
     updateDisplay();
 };
 
-deleteButton.onclick = function(){
+function deleteNumber(){
     result.delete();
     updateDisplay();
-};
+}
 
-clearButton.onclick = function(){
+function clearNumber(){
     result.clear();
-    updateDisplay();
-};
+    clearDisplay();
+}
+
 
 function updateDisplay(){
     if (result.workingValue){
@@ -58,6 +60,11 @@ function updateWorkingResultDisplay(){
     if (!(result.operator === '=')){
         workingResultDisplay.textContent = `${result.value} ${result.operator}`;
     } 
+}
+
+function clearDisplay(){
+    mainResultDisplay.textContent = '';
+    workingResultDisplay.textContent = '';
 }
 
 function add(num1, num2){
@@ -103,18 +110,20 @@ function Result(){
     this.workingValue = '';
 
     this.changeOperator = function (newOperator){
+        if (+this.workingValue == 0 && this.operator === '/'){
+            alert("Sir or Madam, you can not divide by zero.");
+            this.workingValue='';
+            return;
+        }
         if (this.workingValue){
             this.value = roundTwoDec(operate(this.operator,this.value, this.workingValue)).toString();
             this.workingValue='';
-            console.log('reset working value');
         }
-        
         this.operator = newOperator;
 
     };
 
     this.addInput = function(numStr){
-        console.log(!(this.operator === '='));
         if (this.operator === '='){
             if (this.value.includes('.') && numStr === '.') return;
             this.value += numStr;
@@ -127,9 +136,7 @@ function Result(){
 
     this.delete = function(){
         if (this.value){
-            console.log("this is", this.value);
             this.value = this.value.slice(0,-1);
-            console.log("new", this.value);
         }
     };
 
@@ -141,3 +148,4 @@ function Result(){
 
 
 }
+

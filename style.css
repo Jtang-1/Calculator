@@ -1,15 +1,31 @@
+.container{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
+    min-height: 500px;
+    margin-top: 50px;
+    flex-direction: column;
+    gap: 50px;
+}
 .numberGridContainer{
     display: grid;
     height: 450px;
-    width: 450px;
+    width: 350px;
     grid-template-columns: repeat(4,1fr); 
     grid-template-rows: repeat(6,1fr);
     gap: 10px;
+    padding: 20px;
+    border: 5px solid black;
+    background-color: pink;
+    border-radius: 20px;
+
 }
 
 button{
     font-size: 20px;
     cursor: pointer;
+    border-radius: 10px;
 }
 
 .result{
@@ -17,6 +33,8 @@ button{
     display:flex;
     justify-content: end;
     align-items: center;
+    background-color: white;
+    border-radius: 10px;
 }
 
 .gridColSpan2{
@@ -36,4 +54,8 @@ button{
 
 .workingResult{
     font-size:  15px;
+}
+
+#creator{
+    font-size: 25px;
 }
