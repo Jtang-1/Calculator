@@ -1,20 +1,34 @@
 let result = new Result();
 
 let numbers = document.querySelectorAll('button.num');
+let operators = document.querySelectorAll('button.operator');
+let resultDisplay = document.querySelector('.result');
+
 numbers.forEach(function(number){
     number.onclick = function(){
-        console.log(number.value);
         result.addInput(number.value);
-        console.log(result.value);
+        updateDisplay();
     };
 });
 
+operators.forEach(function(operator){
+    operator.onclick = function(){
+        result.changeOperator(operator.value);
+        console.log(result.operator);
+        updateDisplay();
+    };
 
+});
+
+function updateDisplay(){
+    resultDisplay.textContent = result.value;
+
+}
 function add(num1, num2){
-    return num1 + num2;
+    return Number(num1) + Number(num2);
 }
 
-function substract(num1, num2){
+function subtract(num1, num2){
     return num1 - num2;
 }
 
@@ -29,34 +43,47 @@ function divide (num1, num2){
 function operate (operator, num1, num2){
     switch(operator){
         case "+":
-            add(num1, num2);
+            return add(num1, num2);
             break;
         case "-":
-            substract(num1, num2);
+            return subtract(num1, num2);
             break;
         case "*":
-            multiple(num1, num2);
+            return multiply(num1, num2);
             break;
         case "/":
-            divide(num1, num2);
+            return divide(num1, num2);
             break;
     }
 }
 
 let operator = document.querySelector('button.operator');
-console.log("test " + operator.value);
 
 function Result(){
     this.value = '';
-    let operator = null;
+    this.operator = '=';
+    this.workingValue = '';
 
     this.changeOperator = function (newOperator){
-        operator = newOperator;
+        if (this.workingValue){
+            this.value = operate(this.operator,this.value, this.workingValue).toString();
+            this.workingValue='';
+            console.log("new value is", this.value);
+        }
+        this.operator = newOperator;
+
     };
 
     this.addInput = function(numStr){
-        this.value += numStr;
+        console.log(!(this.operator === '='));
+        if (this.value.includes('.') && numStr === '.') return;
+        if (this.operator === '=') this.value += numStr;
+        if (!(this.operator === '=')){
+            this.workingValue +=numStr;
+        }
     };
+
+
     
 
 }
